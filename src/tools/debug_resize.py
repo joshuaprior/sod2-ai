@@ -2,9 +2,8 @@ import numpy as np
 from PIL import Image
 from torchvision import transforms
 
-# Updated imports to use your new path utility
-from util.path import DATA_PATH
-from ai.get_frame_transforms import get_frame_transforms
+from src.util.path import DATA_PATH
+from src.ai.get_frame_transforms import get_frame_transforms
 from src.util.bmp import save_bmp
 
 def run():
@@ -24,7 +23,7 @@ def run():
     print(f"Processing: {source_img_path.name}")
 
     # 2. Load the image
-    img = Image.open(source_img_path).convert("RGB")
+    img = Image.open(source_img_path)
     
     # 3. Apply ONLY the Resize part of your pipeline
     # Grabbing the first transform (Resize) from your shared module
