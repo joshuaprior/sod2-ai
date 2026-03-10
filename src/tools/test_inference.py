@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 from torchvision import models, transforms
 import time
-import cv2
 
 from src.util import MODELS_PATH
 from src.io.capture_frame import capture_frame
@@ -40,8 +39,7 @@ def run():
             
             if frame is not None:
                 # Prepare image for AI
-                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                input_tensor = preprocess(frame_rgb)
+                input_tensor = preprocess(frame)
                 input_batch = input_tensor.unsqueeze(0) # Add a 'batch' dimension (1, 3, 224, 224)
 
                 with torch.no_grad(): # Disable gradient math for faster speed

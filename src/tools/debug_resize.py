@@ -1,4 +1,3 @@
-import cv2
 import numpy as np
 from PIL import Image
 from torchvision import transforms
@@ -6,6 +5,7 @@ from torchvision import transforms
 # Updated imports to use your new path utility
 from util.path import DATA_PATH
 from ai.get_frame_transforms import get_frame_transforms
+from src.util.bmp import save_bmp
 
 def run():
     print("--- Resize Debugger ---")
@@ -35,8 +35,8 @@ def run():
 
     # 4. Save the result
     # Convert back to BGR for standard Windows .bmp compatibility
-    final_output = cv2.cvtColor(np.array(resized_img), cv2.COLOR_RGB2BGR)
-    cv2.imwrite(str(output_path), final_output)
+    final_output_rgb = np.array(resized_img)
+    save_bmp(final_output_rgb, output_path)
 
     print(f"Success! Resized image saved to: {output_path}")
     print(f"New dimensions: {resized_img.size}")
