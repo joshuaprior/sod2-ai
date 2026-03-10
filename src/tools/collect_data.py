@@ -1,9 +1,9 @@
 from pathlib import Path
-import cv2
 import keyboard
 from datetime import datetime
 from src.util.path import DATA_PATH
 from src.io.capture_frame import capture_frame
+from src.util.bmp import save_bmp
 
 # --- Configuration ---
 RAW_DATA_DIR = DATA_PATH / "raw_screenshots"
@@ -18,7 +18,7 @@ def on_hotkey():
         file_path = RAW_DATA_DIR / f"sod2_{timestamp}.bmp"
         
         # cv2 requires strings for paths, so we convert the Path object
-        cv2.imwrite(str(file_path), frame)
+        save_bmp(frame, file_path)
         print(f"Captured: {file_path}")
     else:
         print("Capture failed. Is the game window 'StateOfDecay2 ' open?")

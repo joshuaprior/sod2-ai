@@ -49,7 +49,7 @@ def capture_frame():
         img = np.frombuffer(bmp_str, dtype='uint8')
         img.shape = (bmp_info['bmHeight'], bmp_info['bmWidth'], 4)
         
-        return cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+        return cv2.cvtColor(img, cv2.COLOR_BGRA2RGB)
 
     finally:
         if save_bitmap:
