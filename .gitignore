@@ -1,0 +1,4 @@
+.workspace
+data
+venv
+__pycache__
