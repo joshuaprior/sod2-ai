@@ -53,7 +53,7 @@ def run():
     with torch.no_grad():
         for img_path in images:
             # Load and transform
-            img = Image.open(img_path).convert("RGB")
+            img = Image.open(img_path)
             input_tensor = transform(img).unsqueeze(0)
             
             # Predict

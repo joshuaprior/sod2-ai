@@ -1,4 +1,3 @@
-from pathlib import Path
 import keyboard
 from datetime import datetime
 from src.util.path import DATA_PATH
