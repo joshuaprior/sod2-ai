@@ -12,12 +12,11 @@ def capture_frame():
     if not hwnd:
         return None
 
-    # Get dimensions
-    left, top, right, bot = win32gui.GetWindowRect(hwnd)
-    w = right - left
-    h = bot - top
+    # Get ONLY the client area (excludes title bar, borders, etc.)
+    # left and top are always 0 here; right and bottom are width and height
+    _, _, width, height = win32gui.GetClientRect(hwnd)
 
-    if w <= 0 or h <= 0:
+    if width <= 0 or height <= 0:
         return None
 
     hwnd_dc = None
@@ -31,15 +30,14 @@ def capture_frame():
         save_dc = mfc_dc.CreateCompatibleDC()
 
         save_bitmap = win32ui.CreateBitmap()
-        save_bitmap.CreateCompatibleBitmap(mfc_dc, w, h)
+        save_bitmap.CreateCompatibleBitmap(mfc_dc, width, height)
         save_dc.SelectObject(save_bitmap)
 
-        # Use ctypes for PrintWindow to avoid library attribute errors
-        # Flag 2 = PW_RENDERFULLCONTENT
-        result = ctypes.windll.user32.PrintWindow(hwnd, save_dc.GetSafeHdc(), 2)
-        if result == 0:
-            result = ctypes.windll.user32.PrintWindow(hwnd, save_dc.GetSafeHdc(), 0)
-
+        # Flag 1 = PW_CLIENTONLY
+        # Flag 2 = PW_RENDERFULLCONTENT (often required for newer Win10+ styles)
+        # Combining them (3) ensures we render correctly and only target the client area
+        result = ctypes.windll.user32.PrintWindow(hwnd, save_dc.GetSafeHdc(), 3)
+        
         if result == 0:
             return None
 
