@@ -70,22 +70,36 @@ class Frame:
         """
         return (0, 0, self.SUPER_W, self.SUPER_H)
     
+    def check_item(self, menu_item):
+        """
+        Checks if a menu item can be added without actually adding it.
+        Returns (bool, message)
+        """
+        new_bounds = menu_item.get_bounds()
+        
+        # 1. Check frame boundaries
+        if not contains_rect(self.get_bounds(), new_bounds):
+            return False, "Out of bounds"
+
+        # 2. Check overlaps with existing items
+        for existing_item in self.items:
+            if overlaps(new_bounds, existing_item.get_bounds()):
+                return False, "Overlap detected"
+
+        return True, "Valid"
+
     def add_item(self, menu_item):
         """
-        Validates and adds a menu item to the frame.
+        Validates and adds a menu item to the frame. 
+        Uses check_item to stay DRY (Don't Repeat Yourself).
         """
-        # 1. Check if completely contained within Frame bounds
-        if not contains_rect(self.get_bounds(), menu_item.get_bounds()):
-            raise ValueError(f"Validation Failed: Item at {menu_item.get_bounds()} is out of frame bounds.")
+        is_valid, message = self.check_item(menu_item)
+        
+        if not is_valid:
+            raise ValueError(f"Validation Failed: {message}")
 
-        # 2. Check for overlap with existing items
-        for existing_item in self.items:
-            if overlaps(menu_item.get_bounds(), existing_item.get_bounds()):
-                raise ValueError("Validation Failed: New item overlaps with a previously added item.")
-
-        # 3. Validation passed
         self.items.append(menu_item)
-
+        
     def render(self) -> Image.Image:
         """
         Creates the 4x super-res image, renders all items, and downsamples.
