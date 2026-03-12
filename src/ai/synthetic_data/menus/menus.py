@@ -1,6 +1,6 @@
 from enum import Enum
 
-class MenuType(Enum):
+class Menu(Enum):
     # Metadata: (Class Import Path, Icon File Path)
     WORKSHOP = (
         "src.ai.synthetic_data.menus.classes.small_facility.SmallFacility",
