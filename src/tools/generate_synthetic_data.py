@@ -1,74 +1,49 @@
 import numpy as np
-from PIL import Image, ImageDraw
-from src.util.path import SRC_PATH, DATA_PATH
+from src.ai.synthetic_data.frame import Frame
+from src.ai.synthetic_data.menus.get_menu import get_menu
+from src.ai.synthetic_data.menus.menus import MenuType
+from src.util.path import DATA_PATH
 from src.util.bmp import save_bmp
 
-# --- Configuration (2560x1440 Baseline) ---
-TARGET_RES = (2560, 1440)
-SCALE_FACTOR = 4
-SUPER_RES = (TARGET_RES[0] * SCALE_FACTOR, TARGET_RES[1] * SCALE_FACTOR)
-
-# Precise White (Outer) Rectangle Config
-WHITE_TARGET_SIZE = (156, 202) 
-WHITE_TARGET_OFFSET = 14
-WHITE_TARGET_RADIUS = 12
-WHITE_TARGET_WIDTH = 6
-
 def run():
-    print(f"--- Synthetic Data Generator: Phase 9 (Final Geometry) ---")
+    print("--- Synthetic Data Tool: Manual Architecture Test ---")
     
-    # 1. Create the Large Canvas (Pure Black)
-    img_large = Image.new('RGB', SUPER_RES, (0, 0, 0))
-    draw = ImageDraw.Draw(img_large)
+    # 1. Initialize the high-level Frame (Handles 4x super-res and downsampling)
+    frame = Frame()
 
-    # 2. Load the Workshop Icon
-    icon_path = SRC_PATH / "ai" / "synthetic_data" / "facility_icons" / "workshop.bmp"
-    if not icon_path.exists():
-        print(f"Error: Icon not found at {icon_path}")
+    # 2. Use the Factory to create a Workshop facility
+    # Position (0, 0) in 2560x1440 space. 
+    # The class will handle scaling this to (0, 0) in 10240x5760 space.
+    try:
+        workshop = get_menu(
+            menu_type=MenuType.WORKSHOP, 
+            position=(0, 0), 
+            selected=True
+        )
+        
+        # 3. Add to frame (triggers the overlaps/contains validation)
+        frame.add_item(workshop)
+        print("Successfully added Workshop at (0, 0).")
+
+    except ValueError as e:
+        print(f"Validation Error: {e}")
         return
-    workshop_icon = Image.open(icon_path).convert("RGBA")
-    
-    # 3. Calculate TOTAL Slot Dimensions for Centering
-    # Based on the 156x202 white box
-    s_box_w = WHITE_TARGET_SIZE[0] * SCALE_FACTOR
-    s_box_h = WHITE_TARGET_SIZE[1] * SCALE_FACTOR
-    
-    canvas_cx, canvas_cy = SUPER_RES[0] // 2, SUPER_RES[1] // 2
-    
-    # White Box Coordinates
-    white_rect_coords = [
-        canvas_cx - (s_box_w // 2),
-        canvas_cy - (s_box_h // 2),
-        canvas_cx + (s_box_w // 2),
-        canvas_cy + (s_box_h // 2)
-    ]
-    
-    # 4. Position the ICON relative to White Box (14px offset)
-    icon_x = white_rect_coords[0] + (WHITE_TARGET_OFFSET * SCALE_FACTOR)
-    icon_y = white_rect_coords[1] + (WHITE_TARGET_OFFSET * SCALE_FACTOR)
+    except Exception as e:
+        print(f"Unexpected Error: {e}")
+        return
 
-    # 5. Draw the WHITE Selection Rectangle
-    draw.rounded_rectangle(
-        white_rect_coords,
-        radius=WHITE_TARGET_RADIUS * SCALE_FACTOR,
-        outline=(255, 255, 255), # Pure White
-        width=WHITE_TARGET_WIDTH * SCALE_FACTOR
-    )
+    # 4. Render the final 2560x1440 image
+    print("Rendering and downsampling...")
+    final_image = frame.render()
 
-    # 6. Render the Icon onto the 4x Canvas
-    img_large.paste(workshop_icon, (int(icon_x), int(icon_y)), workshop_icon)
-
-    # 7. Downsample
-    print("Performing final downsample for Phase 9...")
-    img_final = img_large.resize(TARGET_RES, Image.Resampling.LANCZOS)
-
-    # 8. Save
-    output_path = DATA_PATH / "debug_supersampling_test.bmp"
+    # 5. Save to disk
+    output_path = DATA_PATH / "manual_test_frame.bmp"
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    save_bmp(np.array(img_final), output_path)
+    
+    # Convert PIL to numpy for your bmp utility
+    save_bmp(np.array(final_image), output_path)
 
-    print(f"Test frame saved to: {output_path}")
-    print(f"Cleanup complete: Blue rectangle removed.")
+    print(f"Test complete. Image saved to: {output_path}")
 
 if __name__ == "__main__":
     run()
