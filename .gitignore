@@ -1,4 +1,5 @@
 .workspace
+models
 data
 venv
 __pycache__
