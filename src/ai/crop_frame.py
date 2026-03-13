@@ -25,7 +25,7 @@ def get_resolution_ratios(width, height):
         # Ratio of the Workshop panel relative to the full frame it came from
         return m_w / width, m_h / height
 
-def crop_frame(img: Image.Image, target_res=(1920, 1200), h_pos='left', v_pos='top'):
+def crop_frame(img: Image.Image, target_res=(2560, 1440), h_pos='left', v_pos='top'):
     """
     Crops the frame so the Workshop's relative size matches the 1920x1200 baseline.
     """

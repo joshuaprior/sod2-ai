@@ -5,3 +5,4 @@ torch
 torchvision
 keyboard
 pywin32
+tqdm
