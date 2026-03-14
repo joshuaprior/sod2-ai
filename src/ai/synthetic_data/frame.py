@@ -46,28 +46,21 @@ def overlaps(a, b):
         )
 
 class Frame:
-    """
-    Manages a 4x supersampled canvas, handles collision detection, 
-    and renders added menu items.
-    """
-    
-    # Internal Constants
     TARGET_W = 2560
     TARGET_H = 1440
     SCALE = 4
-    
-    # Derived Super Res Constants
     SUPER_W = TARGET_W * SCALE
     SUPER_H = TARGET_H * SCALE
 
-    def __init__(self):
+    def __init__(self, background_image: Image.Image):
+        """
+        :param background_image: A pre-scaled (4x) PIL Image.
+        """
         self.items = []
+        # We start with a copy of the background instead of a black canvas
+        self.background = background_image
 
     def get_bounds(self):
-        """
-        Returns the 4x scaled bounding box of the entire frame.
-        :return: (x1, y1, x2, y2)
-        """
         return (0, 0, self.SUPER_W, self.SUPER_H)
     
     def check_item(self, menu_item):
@@ -99,18 +92,12 @@ class Frame:
             raise ValueError(f"Validation Failed: {message}")
 
         self.items.append(menu_item)
-        
-    def render(self) -> Image.Image:
-        """
-        Creates the 4x super-res image, renders all items, and downsamples.
-        :return: PIL Image at 2560x1440
-        """
-        # Create pure black super-res canvas
-        canvas = Image.new('RGB', (self.SUPER_W, self.SUPER_H), (0, 0, 0))
 
-        # Render all menu items onto the super-res canvas
+    def render(self) -> Image.Image:
+        # Create a copy of the background to draw on top of
+        canvas = self.background.copy()
+
         for item in self.items:
             item.render(canvas)
 
-        # Final downsample to target resolution
         return canvas.resize((self.TARGET_W, self.TARGET_H), Image.Resampling.LANCZOS)
