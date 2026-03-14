@@ -87,8 +87,8 @@ def generate_set(count: int, folder_name: str, force_workshop_selected: bool = F
 def run():
     """Generate 1,000 sparse images per folder."""
     # Folders will now have varied icon counts, making the model work harder
-    generate_set(200, "workshop", force_workshop_selected=True)
-    generate_set(200, "not_workshop", force_workshop_selected=False)
+    generate_set(1000, "workshop", force_workshop_selected=True)
+    generate_set(1000, "not_workshop", force_workshop_selected=False)
 
     print("\nBatch generation complete.")
 
