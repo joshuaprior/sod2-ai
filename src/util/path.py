@@ -5,7 +5,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 DATA_PATH = PROJECT_ROOT / "data"
 TRAINING_DATA_PATH = DATA_PATH / "training_data" / "current"
 
-MODELS_PATH = PROJECT_ROOT / "models"
+MODELS_PATH = PROJECT_ROOT / "assets" / "models"
 MODEL_PATH = MODELS_PATH / "sod2_menu_model.pth"
 
 SRC_PATH = PROJECT_ROOT / "src"
