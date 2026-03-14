@@ -45,10 +45,11 @@ def run():
     optimizer = optim.Adam(model.fc.parameters(), lr=0.001)
 
     # --- 4. The Training Loop ---
+    TRAINING_EPOCHS = 10
     model.train()
-    print("Starting 10 Epochs of learning...")
+    print(f"Starting {TRAINING_EPOCHS} Epochs of learning...")
     
-    for epoch in range(10):
+    for epoch in range(TRAINING_EPOCHS):
         running_loss = 0.0
         for inputs, labels in dataloader:
             optimizer.zero_grad()   # Reset gradients (like clearing a buffer)
@@ -60,7 +61,7 @@ def run():
             running_loss += loss.item()
         
         avg_loss = running_loss / len(dataloader)
-        print(f"Epoch {epoch+1}/10 | Loss: {avg_loss:.4f}")
+        print(f"Epoch {epoch+1}/{TRAINING_EPOCHS} | Loss: {avg_loss:.4f}")
 
     # --- 5. Save the Brain ---
     # We save the 'state_dict' which is essentially the Map of learned weights
