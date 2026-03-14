@@ -2,7 +2,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
-ASSETS_PATH = PROJECT_ROOT / "assets"
+ASSETS_PATH = PROJECT_ROOT / ".." / "sod2-ai-assets"
 
 DATA_PATH = PROJECT_ROOT / "data"
 TRAINING_DATA_PATH = DATA_PATH / "training_data" / "current"
