@@ -5,7 +5,7 @@ from PIL import Image
 from src.ai.synthetic_data.frame import Frame
 from src.ai.synthetic_data.menus.get_menu import get_menu
 from src.ai.synthetic_data.menus.menus import Menu
-from src.util.path import SRC_PATH, DATA_PATH
+from src.util.path import SRC_PATH, TRAINING_DATA_PATH
 from src.util.bmp import save_bmp
 
 # --- Configuration & Assets ---
@@ -38,7 +38,7 @@ def generate_set(count: int, folder_name: str, force_workshop_selected: bool = F
     """
     Generates frames with randomized icon presence to prevent overfitting.
     """
-    output_dir = DATA_PATH / "training_data" / folder_name
+    output_dir = TRAINING_DATA_PATH / folder_name
     output_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"Generating {count} images in {output_dir}...")

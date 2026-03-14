@@ -6,15 +6,15 @@ import shutil
 from pathlib import Path
 
 # Use your path utility and shared transforms
-from util.path import DATA_PATH, MODELS_PATH
+from util.path import TRAINING_DATA_PATH, MODEL_PATH
 from ai.get_frame_transforms import get_frame_transforms
 
 def run():
     print("--- Auditing Workshop Training Data ---")
     
     # 1. Setup Paths
-    workshop_dir = DATA_PATH / "training_data" / "workshop"
-    debug_dir = DATA_PATH / "debug_output"
+    workshop_dir = TRAINING_DATA_PATH / "workshop"
+    debug_dir = TRAINING_DATA_PATH / ".." / "debug_output"
     success_dir = debug_dir / "success"
     fail_dir = debug_dir / "fail"
     
@@ -30,12 +30,11 @@ def run():
     model = models.resnet18()
     model.fc = nn.Linear(model.fc.in_features, 2) # 2 classes
     
-    model_path = MODELS_PATH / "sod2_menu_model.pth"
-    if not model_path.exists():
-        print(f"Error: Model file not found at {model_path}")
+    if not MODEL_PATH.exists():
+        print(f"Error: Model file not found at {MODEL_PATH}")
         return
         
-    model.load_state_dict(torch.load(model_path, map_location=device))
+    model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
     model.eval()
 
     # 3. Process Images

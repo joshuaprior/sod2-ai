@@ -3,12 +3,8 @@ import torch.nn as nn
 import torch.optim as optim
 from torchvision import datasets, models, transforms
 from torch.utils.data import DataLoader
-from src.util.path import DATA_PATH, MODELS_PATH
+from src.util.path import MODELS_PATH, MODEL_PATH, TRAINING_DATA_PATH
 from src.ai import get_frame_transforms
-
-# Define our directory structure
-TRAINING_DATA_PATH = DATA_PATH / "training_data"
-MODEL_PATH = MODELS_PATH / "sod2_menu_model.pth"
 
 # Create models directory if it doesn't exist (like mkdir -p)
 MODELS_PATH.mkdir(parents=True, exist_ok=True)

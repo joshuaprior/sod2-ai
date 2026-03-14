@@ -2,7 +2,7 @@ import numpy as np
 from PIL import Image
 from torchvision import transforms
 
-from src.util.path import DATA_PATH
+from src.util.path import TRAINING_DATA_PATH
 from src.ai.get_frame_transforms import get_frame_transforms
 from src.util.bmp import save_bmp
 
@@ -10,8 +10,8 @@ def run():
     print("--- Resize Debugger ---")
     
     # 1. Setup Paths using your util
-    workshop_dir = DATA_PATH / "training_data" / "workshop"
-    output_path = DATA_PATH / "debug_resized_workshop.bmp"
+    workshop_dir = TRAINING_DATA_PATH / "workshop"
+    output_path = TRAINING_DATA_PATH / ".." / "debug_resized_workshop.bmp"
 
     # Find the first bmp file
     images = list(workshop_dir.glob("*.bmp"))
