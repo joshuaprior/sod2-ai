@@ -5,7 +5,7 @@ from PIL import Image
 from src.ai.synthetic_data.frame import Frame
 from src.ai.synthetic_data.menus.get_menu import get_menu
 from src.ai.synthetic_data.menus.menus import Menu
-from src.util.path import SRC_PATH, TRAINING_DATA_PATH
+from src.util.path import TRAINING_DATA_PATH, ASSETS_PATH
 from src.util.bmp import save_bmp
 
 # --- Configuration & Assets ---
@@ -22,7 +22,7 @@ def get_random_background():
     """Selects a random background, upscales it to 4x once, and caches it."""
     fname = random.choice(BG_FILES)
     if fname not in _BACKGROUND_CACHE:
-        bg_path = SRC_PATH / "ai" / "synthetic_data" / "backgrounds" / fname
+        bg_path = ASSETS_PATH / "synthetic_data" / "backgrounds" / fname
         if not bg_path.exists():
             print(f"Warning: Background {fname} not found. Using black.")
             black_bg = Image.new('RGB', (2560 * 4, 1440 * 4), (0, 0, 0))
