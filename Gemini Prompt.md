@@ -19,4 +19,12 @@ The problem that me and the previous session were stuck on is that the models we
 - The next attemp was to add noise to the background to force the model to understand that there can be any colors around the icon and the selection rectangle. So I took 12 screenshots from the game without the base menu being open. Just shots of the game world. In the training data we used those screenshots as the background to the image with the facility icons being rendered on top in random locations. This still didn't work, the model seemed to have learned that the three facility icons that were used in the training data indicated that the workshop was selected. So it would report workshop selected any time the menu was opened.
 - The final thing we tried was allowing the facility icons to sometimes not be rendered. We hoped that this would force the model to understand that the icon existance does not automatically mean that the workshop is selected, the workshop icon must also have the selection rectangle around it.
 
+What to try next:
+I found a modding community for the game. They provided some tools that I used extract all the UI assets for the game. Now I have access to the actual raw icon files that the game uses to render the UI. They have the alpha channel so we can use them to make much better synthetic data.
+
+What I want to do is create a brownish background square for the icon to sit on. The square will have "fading" alpha channel out to the edge of the image. This is to hopefully train the model that the brown backround doesn't have to be a specific size. We'll also create a selection rectagle image that has a transparent background. Then we will refactor the data generation script to get a background image and plop some of these icons down with the brown background and a selection rectangle for the menu that is selected. I think this has a chance of working.
+
+Special note:
+Before we get down to work on that goal I want to decompose the data generation tool in to a few smaller modules.
+
 Do you have any follow up questions you would like to ask to get more context before we get started?
