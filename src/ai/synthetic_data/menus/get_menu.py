@@ -1,12 +1,12 @@
 import importlib
 from PIL import Image
 from src.util.path import PROJECT_ROOT
-from src.ai.synthetic_data.menus.menus import Menu
+from .menus import Menus
 
 # Internal cache to store loaded icon objects
 _ICON_CACHE = {}
 
-def get_menu(menu: Menu):
+def get_menu(menu: Menus):
     """
     Factory method that now uses an internal cache to avoid repeated disk reads.
     """

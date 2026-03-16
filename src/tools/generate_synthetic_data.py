@@ -4,7 +4,7 @@ from tqdm import tqdm
 from PIL import Image
 from src.ai.synthetic_data.frame import Frame
 from src.ai.synthetic_data.menus.get_menu import get_menu
-from src.ai.synthetic_data.menus.menus import Menu
+from src.ai.synthetic_data.menus import Menus
 from src.util.path import TRAINING_DATA_PATH, ASSETS_PATH
 from src.util.bmp import save_bmp
 
@@ -50,15 +50,15 @@ def generate_set(count: int, folder_name: str, force_workshop_selected: bool = F
         # 1. Determine selection target
         selected_target = None
         if force_workshop_selected:
-            selected_target = Menu.WORKSHOP
+            selected_target = Menus.WORKSHOP
         else:
             # For 'not_workshop', 50% chance of someone else, 50% chance of NO selection
             if random.random() < 0.5:
-                non_workshop_items = [m for m in Menu if m != Menu.WORKSHOP]
+                non_workshop_items = [m for m in Menus if m != Menus.WORKSHOP]
                 selected_target = random.choice(non_workshop_items)
 
         # 2. Add facilities with 'Sparse Presence' logic
-        for menu_type in Menu:
+        for menu_type in Menus:
             # Always include the target we want to highlight
             # Otherwise, only 50% chance to include other facilities
             if menu_type != selected_target and random.random() < 0.5:

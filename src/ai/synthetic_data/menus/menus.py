@@ -6,7 +6,7 @@ SMALL_FACILITY_PATH = ICONS_PATH / "facility" / "small"
 
 
 
-class Menu(Enum):
+class Menus(Enum):
     # Metadata: (Class Import Path, Icon File Path)
     FIGHTING_GYM = (
         "src.ai.synthetic_data.menus.classes.small_facility.SmallFacility",
