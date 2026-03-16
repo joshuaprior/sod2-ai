@@ -10,15 +10,15 @@ class Menus(Enum):
     # Metadata: (Class Import Path, Icon File Path)
     FIGHTING_GYM = (
         "src.ai.synthetic_data.menus.classes.small_facility.SmallFacility",
-        SMALL_FACILITY_PATH / "fighting_gym.bmp"
+        SMALL_FACILITY_PATH / "fighting_gym.png"
     )
     SHOOTING_RANGE= (
         "src.ai.synthetic_data.menus.classes.small_facility.SmallFacility",
-        SMALL_FACILITY_PATH / "shooting_range.bmp"
+        SMALL_FACILITY_PATH / "shooting_range.png"
     )
     WORKSHOP = (
         "src.ai.synthetic_data.menus.classes.small_facility.SmallFacility",
-        SMALL_FACILITY_PATH / "workshop.bmp"
+        SMALL_FACILITY_PATH / "workshop.png"
     )
 
     @property
