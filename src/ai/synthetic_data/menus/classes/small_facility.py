@@ -3,10 +3,12 @@ from ..menu import Menu
 
 '''
 Selection Rect Details:
-Width: 156px
-Height: 202px
-Border Width: 6px
+Width: 158px
+Height: 203px
+Border Width: 7px
 Corner Radius: 12px
+
+Sample Position: (1331, 308)
 '''
 
 class SmallFacility(Menu):
