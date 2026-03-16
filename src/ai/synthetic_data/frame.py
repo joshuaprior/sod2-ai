@@ -53,51 +53,38 @@ class Frame:
     SUPER_H = TARGET_H * SCALE
 
     def __init__(self, background_image: Image.Image):
-        """
-        :param background_image: A pre-scaled (4x) PIL Image.
-        """
         self.items = []
-        # We start with a copy of the background instead of a black canvas
         self.background = background_image
 
     def get_bounds(self):
         return (0, 0, self.SUPER_W, self.SUPER_H)
     
-    def check_item(self, menu_item):
+    def check_item(self, menu_item) -> bool:
         """
         Checks if a menu item can be added without actually adding it.
-        Returns (bool, message)
         """
-        new_bounds = menu_item.get_bounds()
+        new_bounds = menu_item.bounds
         
-        # 1. Check frame boundaries
         if not contains_rect(self.get_bounds(), new_bounds):
-            return False, "Out of bounds"
+            return False
 
-        # 2. Check overlaps with existing items
         for existing_item in self.items:
-            if overlaps(new_bounds, existing_item.get_bounds()):
-                return False, "Overlap detected"
+            if overlaps(new_bounds, existing_item.bounds):
+                return False
 
-        return True, "Valid"
+        return True
 
     def add_item(self, menu_item):
         """
-        Validates and adds a menu item to the frame. 
-        Uses check_item to stay DRY (Don't Repeat Yourself).
+        Validates and adds a menu item to the frame.
         """
-        is_valid, message = self.check_item(menu_item)
-        
-        if not is_valid:
-            raise ValueError(f"Validation Failed: {message}")
+        if not self.check_item(menu_item):
+            raise ValueError("Validation Failed: Item out of bounds or overlapping")
 
         self.items.append(menu_item)
 
     def render(self) -> Image.Image:
-        # Create a copy of the background to draw on top of
         canvas = self.background.copy()
-
         for item in self.items:
             item.render(canvas)
-
         return canvas.resize((self.TARGET_W, self.TARGET_H), Image.Resampling.LANCZOS)
