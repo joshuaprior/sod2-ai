@@ -6,3 +6,4 @@ torchvision
 keyboard
 pywin32
 tqdm
+Pillow
