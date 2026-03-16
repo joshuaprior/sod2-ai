@@ -70,14 +70,15 @@ class Frame:
                 f"required Frame resolution {expected_res}."
             )
 
-    def get_bounds(self):
+    @property
+    def bounds(self):
         return (0, 0, self.SUPER_W, self.SUPER_H)
     
     def check_item(self, menu_item) -> bool:
         """Checks if a menu item can be added without actually adding it."""
         new_bounds = menu_item.bounds
         
-        if not contains_rect(self.get_bounds(), new_bounds):
+        if not contains_rect(self.bounds, new_bounds):
             return False
 
         for existing_item in self.items:

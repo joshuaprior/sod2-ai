@@ -18,7 +18,7 @@ def _place_item(frame: Frame, item: Menu) -> bool:
     False if no valid position was found after multiple
     attempts.
     """
-    _, _, max_w, max_h = frame.get_bounds()
+    _, _, max_w, max_h = frame.bounds
 
     for _ in range(500):
         _randomize_position(item, max_w, max_h)
