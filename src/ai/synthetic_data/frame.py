@@ -53,16 +53,28 @@ class Frame:
     SUPER_H = TARGET_H * SCALE
 
     def __init__(self, background_image: Image.Image):
+        """
+        :param background_image: A PIL Image.
+        """
+        self._validate_background(background_image)
+        
         self.items = []
         self.background = background_image
+
+    def _validate_background(self, img: Image.Image):
+        """Ensures the provided image matches the required frame resolution."""
+        expected_res = (self.TARGET_W, self.TARGET_H)
+        if img.size != expected_res:
+             raise ValueError(
+                f"Background image resolution {img.size} does not match "
+                f"required Frame resolution {expected_res}."
+            )
 
     def get_bounds(self):
         return (0, 0, self.SUPER_W, self.SUPER_H)
     
     def check_item(self, menu_item) -> bool:
-        """
-        Checks if a menu item can be added without actually adding it.
-        """
+        """Checks if a menu item can be added without actually adding it."""
         new_bounds = menu_item.bounds
         
         if not contains_rect(self.get_bounds(), new_bounds):
@@ -75,9 +87,7 @@ class Frame:
         return True
 
     def add_item(self, menu_item):
-        """
-        Validates and adds a menu item to the frame.
-        """
+        """Validates and adds a menu item to the frame."""
         if not self.check_item(menu_item):
             raise ValueError("Validation Failed: Item out of bounds or overlapping")
 
