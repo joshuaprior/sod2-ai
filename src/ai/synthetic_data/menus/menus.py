@@ -1,7 +1,7 @@
 from enum import Enum
 from src.util.path import ASSETS_PATH
 
-ICONS_PATH = ASSETS_PATH / "synthetic_data" / "menus" / "icons"
+ICONS_PATH = ASSETS_PATH / "synthetic_data" / "icons"
 SMALL_FACILITY_PATH = ICONS_PATH / "facility" / "small"
 
 
