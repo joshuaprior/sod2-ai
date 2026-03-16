@@ -1,7 +1,7 @@
-import random
 from PIL import Image, ImageDraw
+from ..menu import Menu
 
-class SmallFacility:
+class SmallFacility(Menu):
     WIDTH = 156
     HEIGHT = 202
     BORDER_WIDTH = 6
@@ -10,26 +10,12 @@ class SmallFacility:
     SCALE = 4
 
     def __init__(self, icon_image: Image.Image):
+        # Call the Menu base class constructor
+        super().__init__()
         self.icon = icon_image
-        self.pos_x = 0
-        self.pos_y = 0
-        self._selected = False
-        self.opacity = 255  # Default to 100%
 
-    def set_position(self, x: int, y: int):
-        self.pos_x = x
-        self.pos_y = y
-
-    def set_selected(self, selected: bool):
-        self._selected = selected
-        if selected:
-            # Set random opacity between 20% (51) and 100% (255)
-            self.opacity = random.randint(51, 255)
-
-    def get_selected(self) -> bool:
-        return self._selected
-
-    def get_bounds(self):
+    @property
+    def bounds(self) -> tuple[int, int, int, int]:
         x1 = self.pos_x * self.SCALE
         y1 = self.pos_y * self.SCALE
         x2 = (self.pos_x + self.WIDTH) * self.SCALE
@@ -37,15 +23,11 @@ class SmallFacility:
         return (x1, y1, x2, y2)
 
     def render(self, canvas: Image.Image):
-        """
-        Renders the facility and the selection rectangle with alpha support.
-        """
-        s_x1, s_y1, s_x2, s_y2 = self.get_bounds()
+        s_x1, s_y1, s_x2, s_y2 = self.bounds
         
-        # 1. Draw Selection Rectangle with Opacity
+        # 1. Draw Selection Rectangle
         if self._selected:
             # Create a temporary transparent layer for the rectangle
-            # This ensures the alpha blending is correct on the black background
             overlay = Image.new('RGBA', canvas.size, (0, 0, 0, 0))
             overlay_draw = ImageDraw.Draw(overlay)
             
