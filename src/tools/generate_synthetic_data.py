@@ -2,37 +2,12 @@ import numpy as np
 import random
 from tqdm import tqdm
 from PIL import Image
-from src.ai.synthetic_data.frame import Frame
-from src.ai.synthetic_data.menus.get_menu import get_menu
-from src.ai.synthetic_data.menus import Menus
+from src.ai.synthetic_data import Frame, Background, get_menu, Menus
 from src.util.path import TRAINING_DATA_PATH, ASSETS_PATH
 from src.util.bmp import save_bmp
 
 # --- Configuration & Assets ---
-BG_FILES = [
-    "sod2_205339_215625.bmp", "sod2_205359_644540.bmp", "sod2_205415_404741.bmp",
-    "sod2_205456_706267.bmp", "sod2_205526_157887.bmp", "sod2_205555_223478.bmp",
-    "sod2_212034_526575.bmp", "sod2_212159_112947.bmp", "sod2_212237_122815.bmp",
-    "sod2_212421_583725.bmp", "sod2_212436_437910.bmp", "sod2_212442_778090.bmp"
-]
-
-_BACKGROUND_CACHE = {}
-
-def get_random_background():
-    """Selects a random background, upscales it to 4x once, and caches it."""
-    fname = random.choice(BG_FILES)
-    if fname not in _BACKGROUND_CACHE:
-        bg_path = ASSETS_PATH / "synthetic_data" / "backgrounds" / fname
-        if not bg_path.exists():
-            print(f"Warning: Background {fname} not found. Using black.")
-            black_bg = Image.new('RGB', (2560 * 4, 1440 * 4), (0, 0, 0))
-            _BACKGROUND_CACHE[fname] = black_bg
-        else:
-            img = Image.open(bg_path).convert("RGB")
-            scaled_bg = img.resize((2560 * 4, 1440 * 4), Image.Resampling.NEAREST)
-            _BACKGROUND_CACHE[fname] = scaled_bg
-            
-    return _BACKGROUND_CACHE[fname]
+_BACKGROUND_PROVIDER = Background()
 
 def generate_set(count: int, folder_name: str, force_workshop_selected: bool = False):
     """
@@ -44,7 +19,10 @@ def generate_set(count: int, folder_name: str, force_workshop_selected: bool = F
     print(f"Generating {count} images in {output_dir}...")
 
     for i in tqdm(range(count)):
-        bg_asset = get_random_background()
+        # Acquire a base background from the provider (2560x1440)
+        base_bg = _BACKGROUND_PROVIDER.get_background()
+        # Upscale to the frame's supersampled resolution (4x)
+        bg_asset = base_bg.resize((Frame.SUPER_W, Frame.SUPER_H), Image.Resampling.NEAREST)
         frame = Frame(bg_asset)
         
         # 1. Determine selection target
