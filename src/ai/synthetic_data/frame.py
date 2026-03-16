@@ -48,9 +48,6 @@ def overlaps(a, b):
 class Frame:
     TARGET_W = 2560
     TARGET_H = 1440
-    SCALE = 4
-    SUPER_W = TARGET_W * SCALE
-    SUPER_H = TARGET_H * SCALE
 
     def __init__(self, background_image: Image.Image):
         """
@@ -72,7 +69,7 @@ class Frame:
 
     @property
     def bounds(self):
-        return (0, 0, self.SUPER_W, self.SUPER_H)
+        return (0, 0, self.TARGET_W, self.TARGET_H)
     
     def check_item(self, menu_item) -> bool:
         """Checks if a menu item can be added without actually adding it."""
@@ -95,7 +92,7 @@ class Frame:
         self.items.append(menu_item)
 
     def render(self) -> Image.Image:
-        canvas = self.background.copy()
         for item in self.items:
-            item.render(canvas)
-        return canvas.resize((self.TARGET_W, self.TARGET_H), Image.Resampling.LANCZOS)
+            item.render(self.background)
+            
+        return self.background
