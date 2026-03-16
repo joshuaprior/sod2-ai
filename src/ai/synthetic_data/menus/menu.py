@@ -3,9 +3,7 @@ from abc import ABC, abstractmethod
 from PIL import Image
 
 class Menu(ABC):
-    """
-    Abstract Base Class for all menu elements.
-    """
+    """Abstract Base Class for all menu elements."""
 
     def __init__(self):
         self.pos_x = 0
