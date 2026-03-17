@@ -3,6 +3,7 @@ from src.util.path import ASSETS_PATH
 from ..menu import Menu
 
 _SELECTION_CACHE = {}
+_BACKGROUND = None
 
 def get_selection(opacity: int) -> Image.Image:
     """
@@ -15,6 +16,19 @@ def get_selection(opacity: int) -> Image.Image:
         _SELECTION_CACHE[opacity] = Image.open(path).convert("RGBA")
 
     return _SELECTION_CACHE[opacity]
+
+def get_background() -> Image.Image:
+    """Returns the SmallFacility background image."""
+    global _BACKGROUND
+
+    path = ASSETS_PATH / "synthetic_data" / "icons" / "facility" / "background" / "small_facility_background.png"
+
+    if not _BACKGROUND:
+        if not path.exists():
+            raise FileNotFoundError(f"SmallFacility background not found at {path}")
+        _BACKGROUND = Image.open(path).convert("RGBA")
+        
+    return _BACKGROUND
 
 class SmallFacility(Menu):
     """Implementation of a small facility menu item."""
@@ -36,10 +50,14 @@ class SmallFacility(Menu):
         """Renders the facility layers directly at the menu position."""
         pos = (self.pos_x, self.pos_y)
 
-        # 1. Render the Icon
+        # 1. Render the background
+        background = get_background()
+        canvas.paste(background, pos, background)
+
+        # 2. Render the Icon
         canvas.paste(self.icon, pos, self.icon)
 
-        # 2. Render Selection Overlay
+        # 3. Render Selection Overlay
         if self.selected:
             # Pulls the cached image from the selection factory
             rect = get_selection(self._selection_opacity)
