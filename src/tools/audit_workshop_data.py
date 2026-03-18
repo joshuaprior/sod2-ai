@@ -9,6 +9,8 @@ from pathlib import Path
 from util.path import TRAINING_DATA_PATH, MODEL_PATH
 from ai.get_frame_transforms import get_frame_transforms
 
+DEBUG_MODE = False
+
 def run():
     print("--- Auditing Workshop Training Data ---")
     
@@ -38,7 +40,10 @@ def run():
     model.eval()
 
     # 3. Process Images
-    transform = get_frame_transforms()
+    if DEBUG_MODE:
+        transform = get_frame_transforms()
+    else:
+        transform = get_frame_transforms(None, process_image=False, to_tensor=True)
     # Note: We need to know the index for 'workshop'
     # Based on alpha order (not_workshop=0, workshop=1), workshop is index 1
     WORKSHOP_IDX = 1

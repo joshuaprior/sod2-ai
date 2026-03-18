@@ -1,5 +1,6 @@
 import numpy as np
 from tqdm import tqdm
+from src.ai.get_frame_transforms import get_frame_transforms
 from src.ai.synthetic_data import (
     Frame, 
     Background, 
@@ -14,6 +15,7 @@ from src.util.bmp import save_bmp
 
 GEN_WORKSHOP_COUNT = 1000
 GEN_NOT_WORKSHOP_COUNT = 1000
+DEBUG_MODE = False
 
 def generate_batch(count: int, label: str):
     """Generates and saves a specific number of frames for a given label."""
@@ -24,7 +26,9 @@ def generate_batch(count: int, label: str):
 
     workshop = get_menu(Menus.WORKSHOP)
     others = [get_menu(Menus.FIGHTING_GYM), get_menu(Menus.SHOOTING_RANGE)]
-    
+
+    transforms = get_frame_transforms(None, process_image=True, to_tensor=False)
+
     print(f"Generating {count} frames for '{label}'...")
     
     for i in tqdm(range(count)):
@@ -45,6 +49,8 @@ def generate_batch(count: int, label: str):
         
         # 3. Render
         image = frame.render()
+        if not DEBUG_MODE:
+            image = transforms(image)
         
         # 4. Save to the label-specific folder
         output_path = output_dir / f"synth_{i:04d}.bmp"

@@ -7,13 +7,18 @@ from tqdm import tqdm
 from src.util.path import MODELS_PATH, MODEL_PATH, TRAINING_DATA_PATH
 from src.ai import get_frame_transforms
 
+DEBUG_MODE = False
+
 # Create models directory if it doesn't exist (like mkdir -p)
 MODELS_PATH.mkdir(parents=True, exist_ok=True)
 
 def run():
     # --- 1. Data Pre-processing ---
     # ResNet-18 expects 224x224 images and specific color normalization
-    data_transforms = get_frame_transforms()
+    if DEBUG_MODE:
+        data_transforms = get_frame_transforms()
+    else:
+        data_transforms = get_frame_transforms(None, process_image=False, to_tensor=True)
 
     # Load dataset: automatically maps folder names to labels (0 and 1)
     dataset = datasets.ImageFolder(str(TRAINING_DATA_PATH), transform=data_transforms)
