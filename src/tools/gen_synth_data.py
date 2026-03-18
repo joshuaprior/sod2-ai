@@ -1,46 +1,65 @@
 import numpy as np
-from PIL import Image
+from tqdm import tqdm
 from src.ai.synthetic_data import (
     Frame, 
     Background, 
     get_menu, 
     Menus, 
     compose_frame, 
-    select_menu
+    select_menu,
+    unselect_menu
 )
-from src.util.path import DATA_PATH
+from src.util.path import TRAINING_DATA_PATH
 from src.util.bmp import save_bmp
 
-def run():
-    print("--- Generating Single Test Frame (1x Logic) ---")
+GEN_WORKSHOP_COUNT = 1000
+GEN_NOT_WORKSHOP_COUNT = 1000
+
+def generate_batch(count: int, label: str):
+    """Generates and saves a specific number of frames for a given label."""
+    output_dir = TRAINING_DATA_PATH / label
+    output_dir.mkdir(parents=True, exist_ok=True)
     
-    # 1. Setup Providers
-    background = Background()
-    
-    # 2. Prepare the Menus
-    # We'll simulate a 'Workshop' labeled frame
+    bg_provider = Background()
+
     workshop = get_menu(Menus.WORKSHOP)
     others = [get_menu(Menus.FIGHTING_GYM), get_menu(Menus.SHOOTING_RANGE)]
     
-    # Decide which ones render and set selection state
-    # This uses your new 50/50 logic from select_menu.py
-    items = select_menu(workshop, others)
+    print(f"Generating {count} frames for '{label}'...")
     
-    # 3. Composition
-    # Grab a random background
-    frame = Frame(background.get_background())
+    for i in tqdm(range(count)):
+        # 1. Determine items and selection based on label
+        if label == "workshop":
+            # Workshop is always present and always selected
+            items = select_menu(workshop, others)
+        else:
+            # Workshop is unselected; other facilities might be selected
+            items = unselect_menu(workshop, others)
+            
+        # 2. Composition
+        # Grab a random background asset
+        frame = Frame(bg_provider.get_background())
+        
+        # Randomize positions (non-overlapping)
+        compose_frame(frame, items)
+        
+        # 3. Render
+        image = frame.render()
+        
+        # 4. Save to the label-specific folder
+        output_path = output_dir / f"synth_{i:04d}.bmp"
+        save_bmp(np.array(image), output_path)
+
+def run():
+    print("--- Starting Synthetic Data Generation (Small Test Run) ---")
     
-    # Randomize positions on the frame
-    compose_frame(frame, items)
+    # Generate frames where Workshop is the target
+    generate_batch(GEN_WORKSHOP_COUNT, "workshop")
     
-    # 4. Render and Save
-    image = frame.render()
+    # Generate frames where Workshop is NOT the target
+    generate_batch(GEN_NOT_WORKSHOP_COUNT, "not_workshop")
     
-    output_path = DATA_PATH / "debug_test_frame.bmp"
-    save_bmp(np.array(image), output_path)
-    
-    print(f"Success! Test frame saved to: {output_path}")
-    print(f"Items rendered: {[type(i).__name__ for i in items]}")
+    print(f"\nSuccess! {GEN_WORKSHOP_COUNT + GEN_NOT_WORKSHOP_COUNT} frames generated in: {TRAINING_DATA_PATH}")
 
 if __name__ == "__main__":
     run()
