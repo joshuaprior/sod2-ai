@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torchvision import datasets, models, transforms
 from torch.utils.data import DataLoader
+from tqdm import tqdm
 from src.util.path import MODELS_PATH, MODEL_PATH, TRAINING_DATA_PATH
 from src.ai import get_frame_transforms
 
@@ -47,7 +48,7 @@ def run():
     
     for epoch in range(TRAINING_EPOCHS):
         running_loss = 0.0
-        for inputs, labels in dataloader:
+        for inputs, labels in tqdm(dataloader, desc=f"Epoch {epoch+1}/{TRAINING_EPOCHS}"):
             optimizer.zero_grad()   # Reset gradients (like clearing a buffer)
             outputs = model(inputs) # Forward pass: Make a guess
             loss = criterion(outputs, labels) # Calculate how wrong we were
