@@ -1,0 +1,34 @@
+{
+  "2560x1440": {
+    "framing": {
+      "small_facility": {
+        "dim": [158, 203],
+        "tip": [151, 77, 165, 91]
+      }
+    },
+    "home_sites": [
+      {
+        "name": "Lundegaard Lumber Mill",
+        "class": "lundegaard_lumber_mill",
+        "slots": [
+          {
+            "size": "small",
+            "pos": [1331, 308]
+          },
+          {
+            "size": "small",
+            "pos": [1331, 544]
+          },
+          {
+            "size": "small",
+            "pos": [1331, 780]
+          },
+          {
+            "size": "small",
+            "pos": [1091, 544]
+          }
+        ]
+      }
+    ]
+  }
+}
