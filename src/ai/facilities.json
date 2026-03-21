@@ -12,20 +12,34 @@
         "class": "lundegaard_lumber_mill",
         "slots": [
           {
+            "name": "fighting_gym",
             "size": "small",
             "pos": [1331, 308]
           },
           {
+            "name": "workshop",
             "size": "small",
             "pos": [1331, 544]
           },
           {
+            "name": "shooting_range",
             "size": "small",
             "pos": [1331, 780]
           },
           {
+            "name": "sawmill",
             "size": "small",
             "pos": [1091, 544]
+          },
+          {
+            "name": "storage",
+            "size": "small",
+            "pos": [1091, 780]
+          },
+          {
+            "name": "command_center",
+            "size": "small",
+            "pos": [849, 780]
           }
         ]
       }

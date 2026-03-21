@@ -13,8 +13,8 @@ from src.ai.synthetic_data import (
 from src.util.path import TRAINING_DATA_PATH
 from src.util.bmp import save_bmp
 
-GEN_WORKSHOP_COUNT = 1000
-GEN_NOT_WORKSHOP_COUNT = 1000
+GEN_WORKSHOP_COUNT = 200
+GEN_NOT_WORKSHOP_COUNT = 200
 DEBUG_MODE = False
 
 def generate_batch(count: int, label: str):
