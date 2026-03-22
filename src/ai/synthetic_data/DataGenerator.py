@@ -1,10 +1,11 @@
+from typing import Generator
 import random
 from tqdm import tqdm
 from PIL import Image
 from src.ai import FeatureMap
 from src.ai.synthetic_data import ClipCache
 
-def slot_class_names(slots: int) -> tuple[int, str]:
+def slot_class_names(slots: int) -> Generator[tuple[int, str], None, None]:
     """Generates class names for the given number of slots, including an 'unselected' class."""
     classes = ["unselected"] + [f"slot_{i:02d}" for i in range(slots)]
     for index, name in enumerate(classes):
