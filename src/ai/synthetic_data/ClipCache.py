@@ -1,9 +1,10 @@
 import random
 from pathlib import Path
 from PIL import Image
+from util import Img
 
 class ClipCache:
-  def __init__(self, target_res: tuple[int, int], selected_clips: list[Image.Image], unselected_clips: list[Image.Image]):
+  def __init__(self, target_res: tuple[int, int], selected_clips: list[Img], unselected_clips: list[Img]):
     self._target_res = target_res
     self._selected_clips = selected_clips
     self._unselected_clips = unselected_clips
@@ -15,21 +16,21 @@ class ClipCache:
       if clip.width < w or clip.height < h:
         raise ValueError(f"Clip image resolution {clip.size} is not big enough to be clipped to {target_res}.")
 
-  def _jiggle(self, img: Image.Image) -> Image.Image:
+  def _jiggle(self, img: Img) -> tuple[int, int, int, int]:
     max_jiggle_x = img.width - self._target_res[0]
     max_jiggle_y = img.height - self._target_res[1]
     x = random.randint(0, max_jiggle_x)
     y = random.randint(0, max_jiggle_y)
     return (x, y, max_jiggle_x, max_jiggle_y)
 
-  def _crop(self, img: Image.Image, x: int, y: int) -> Image.Image:
+  def _crop(self, img: Img, x: int, y: int) -> Img:
     w, h = self._target_res
-    return img.crop((x, y, x + w, y + h))
+    return img.crop(x, y, x + w, y + h)
   
   def _create_cache_matrix(self, rows, cols) -> list[list[None]]:
     return [[None] * cols for _ in range(rows)]
   
-  def _get_random_clip(self, images: list[Image.Image], cache: list[list[list[Image.Image | None]]]) -> Image.Image:
+  def _get_random_clip(self, images: list[Img], cache: list[list[list[Img | None]]]) -> Img:
     i = random.randrange(len(images))
     x, y, max_jiggle_x, max_jiggle_y = self._jiggle(images[i])
 
@@ -41,20 +42,20 @@ class ClipCache:
 
     return cache[i][x][y]
 
-  def get_selected(self) -> Image.Image:
+  def get_selected(self) -> Img:
     return self._get_random_clip(self._selected_clips, self._selected_crop_cache)
 
-  def get_unselected(self) -> Image.Image:
+  def get_unselected(self) -> Img:
     return self._get_random_clip(self._unselected_clips, self._unselected_crop_cache)
   
   @classmethod
   def from_directory(cls, target_res: tuple[int, int], path) -> "ClipCache":
-      """Loads all clips from a directory into a list of PIL Images."""
+      """Loads all clips from a directory into a list of Img Images."""
       path = Path(path)
       selected_path = path / "selected"
-      selected = [Image.open(f).convert("RGB") for f in selected_path.glob("*.bmp")]
+      selected = [Img.from_file(f) for f in selected_path.glob("*.bmp")]
 
       unselected_path = path / "unselected"
-      unselected = [Image.open(f).convert("RGB") for f in unselected_path.glob("*.bmp")]
+      unselected = [Img.from_file(f) for f in unselected_path.glob("*.bmp")]
 
       return  cls(target_res, selected, unselected)
