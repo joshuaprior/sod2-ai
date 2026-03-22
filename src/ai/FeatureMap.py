@@ -1,8 +1,8 @@
 from PIL import Image
-from src.util import classproperty
+from src.util import classproperty, Img
 
 class SlotList:
-    def __init__(self, capacity: int, resolution: tuple[int, int]=(15, 15)):
+    def __init__(self, capacity: int, resolution: tuple[int, int]):
         self._capacity = capacity
         self._resolution = resolution
 
@@ -24,10 +24,10 @@ class SlotList:
         ), None)
         return preceding_null_index is None
     
-    def set_slot(self, index: int, img: Image.Image):
+    def set_slot(self, index: int, img: Img):
         raise NotImplementedError()
 
-    def add_slot(self, img: Image.Image):
+    def add_slot(self, img: Img):
         if len(self._values) >= self.CAPACITY:
             raise IndexError(f"Cannot add more than {self.CAPACITY} slots.")
         
@@ -36,7 +36,7 @@ class SlotList:
         
         self._values.append(img)
 
-    def append(self, value: list[Image.Image]):
+    def append(self, value: list[Img]):
         raise NotImplementedError()
     
     def items(self):
@@ -71,8 +71,14 @@ class FeatureMap:
         return (x, y)
         
 
-    def render(self):
-        canvas = Image.new("RGB", self._canvas_size, self._background_color)
+    def render(self, canvas: Img=None) -> Img:
+        if canvas is None:
+            canvas = Img.from_dimensions(*self._canvas_size)
+
+        if canvas.size != self._canvas_size:
+            raise ValueError(f"Canvas size {canvas.size} does not match required {self._canvas_size}.")
+        
+        canvas.fill(self._background_color)
 
         for index, img in self.slots.items():
             pos = self._get_slot_pos(index)

@@ -38,9 +38,12 @@ class Img:
 
     def crop(self, x1: int, y1: int, x2: int, y2: int) -> "Img":
         """ Returns a 'view' by default (shares memory with original). """
-        # NumPy slicing is [rows, columns] -> [y, x]
         data = self._data[y1:y2, x1:x2]
         return Img(data)
+    
+    def fill(self, color: tuple[int, int, int]):
+        """ Fills the entire image with the specified RGB color. """
+        self._data[:] = color
 
     @classmethod
     def from_file(cls, path: Path) -> "Img":
@@ -66,6 +69,12 @@ class Img:
         This is a deep copy (allocates new memory).
         """
         return cls(img.raw_data.copy())
+    
+    @classmethod
+    def from_dimensions(cls, width: int, height: int) -> "Img":
+        """ Creates a new Img with the given dimensions. """
+        data = np.full((height, width, 3), (0, 0, 0), dtype=np.uint8)
+        return cls(data)
 
     def __repr__(self):
         return f"<Img {self.width}x{self.height} at {hex(id(self))}>"
