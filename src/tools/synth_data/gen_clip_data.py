@@ -9,7 +9,7 @@ from src.ai import FeatureMap
 from src.ai.synthetic_data import DataGenerator, ClipCache 
 
 # --- Configuration ---
-SAMPLES_PER_CLASS = 1000
+SAMPLES_PER_CLASS = 5
 SLOTS_ASSETS_PATH = ASSETS_PATH / "synthetic_data" / "clips"
 
 def run():
