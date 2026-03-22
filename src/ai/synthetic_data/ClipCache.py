@@ -34,7 +34,7 @@ class ClipCache:
     x, y, max_jiggle_x, max_jiggle_y = self._jiggle(images[i])
 
     if cache[i] is None:
-      cache[i] = self._create_cache_matrix(max_jiggle_x, max_jiggle_y)
+      cache[i] = self._create_cache_matrix(max_jiggle_x + 1, max_jiggle_y + 1)
 
     if cache[i][x][y] is None:
       cache[i][x][y] = self._crop(images[i], x, y)
