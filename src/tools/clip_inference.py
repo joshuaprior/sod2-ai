@@ -19,7 +19,7 @@ class ClipInference:
     def __init__(self):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.config = self._load_config()
-        self.transform = get_frame_transforms(None, process_image=False, to_tensor=True)
+        self.transform = get_frame_transforms()
         
         # New Class Names: slot_01 ... slot_22 + unselected
         self.class_names = [f"slot_{i+1:02d}" for i in range(22)] + ["unselected"]
