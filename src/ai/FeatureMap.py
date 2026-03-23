@@ -36,6 +36,9 @@ class SlotList:
         
         self._values.append(img)
 
+    def clear(self):
+        self._values.clear()
+
     def append(self, value: list[Img]):
         raise NotImplementedError()
     
@@ -48,7 +51,11 @@ class FeatureMap:
     def __init__(self):
         self._slots = SlotList(22, FeatureMap.SLOT_RESOLUTION)
         self._background_color = (195, 195, 195)
-        self._canvas_size = (224, 224)
+        self._canvas_size = FeatureMap.CANVAS_RESOLUTION
+
+    @classproperty
+    def CANVAS_RESOLUTION(cls) -> tuple[int, int]:
+        return (224, 224)
 
     @classproperty
     def SLOT_RESOLUTION(cls) -> tuple[int, int]:
@@ -87,3 +94,6 @@ class FeatureMap:
             canvas.paste(img, pos)
         
         return canvas
+    
+    def clear(self):
+        self._slots.clear()

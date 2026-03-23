@@ -1,7 +1,7 @@
 from typing import Generator
 import random
 from tqdm import tqdm
-from PIL import Image
+from src.util import Img
 from src.ai import FeatureMap
 from src.ai.synthetic_data import ClipCache
 
@@ -14,28 +14,32 @@ def slot_class_names(slots: int) -> Generator[tuple[int, str], None, None]:
 class DataGenerator:
     def __init__(self, slots: ClipCache):
         self.slots = slots
+        self.feature_map = FeatureMap()
+        self.canvas = Img.from_dimensions(*FeatureMap.CANVAS_RESOLUTION)
 
         self.generators = {}
         for selected_index, name in slot_class_names(FeatureMap.SLOT_CAPACITY):
-            self.generators[name] = lambda i=selected_index: self._populate_slots(FeatureMap(), i)
+            self.generators[name] = lambda i=selected_index: self._populate_slots(i)
 
-    def _populate_slots(self, feature_map: FeatureMap, selected_slot: int) -> FeatureMap:
+    def _populate_slots(self, selected_slot: int):
         min_active = selected_slot if selected_slot != -1 else 1
-        max_active = feature_map.SLOT_CAPACITY - 1
+        max_active = self.feature_map.SLOT_CAPACITY - 1
 
         for i in range(random.randint(min_active, max_active)):
             if i == selected_slot:
-                feature_map.slots.add_slot(self.slots.get_selected())
+                self.feature_map.slots.add_slot(self.slots.get_selected())
             else:
-                feature_map.slots.add_slot(self.slots.get_unselected())
-        return feature_map
+                self.feature_map.slots.add_slot(self.slots.get_unselected())
     
-    def generate_image(self, class_name: str) -> Image.Image:
+    def generate_image(self, class_name: str) -> Img:
         """Generates a single feature map image for the given class name."""
         feature_map_generator = self.generators[class_name]
         if feature_map_generator is None:
             raise ValueError(f"Invalid class name: {class_name}")
-        return feature_map_generator().render()
+        
+        self.feature_map.clear()
+        feature_map_generator()
+        return self.feature_map.render(self.canvas)
 
     @classmethod
     def generate_to_disk(cls, samples_per_class, slots: ClipCache, output_path, progress=False):
@@ -50,7 +54,7 @@ class DataGenerator:
                 iterator = tqdm(iterator, desc=f"Generating {name}")
             
             for i in iterator:
-                image = generator.generate_image(name)
-                image.save(class_dir / f"{name}_{i:04d}.bmp")
+                img = generator.generate_image(name)
+                img.save(class_dir / f"{name}_{i:04d}.bmp")
 
     
