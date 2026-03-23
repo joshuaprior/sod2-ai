@@ -107,6 +107,23 @@ class Model:
         self._optimizer.step()
         return loss.item()
     
+    def predict(self, img: Img) -> str:
+        """
+        Runs inference on a single Img object and returns the class name.
+        """
+        if self._training:
+            raise RuntimeError("Model is in training mode.")
+
+        with torch.no_grad():
+            inputs = self._to_tensor([img]).to(self._device)
+            outputs = self._model(inputs)
+
+            # Get the predicted class index 
+            _, preds = torch.max(outputs, 1)
+            index = preds[0].item()
+            
+        return CLASSES[index]
+    
     def save(self, path: Path):
         torch.save(self._model.state_dict(), path)
     
