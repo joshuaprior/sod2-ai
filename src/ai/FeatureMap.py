@@ -91,7 +91,7 @@ class FeatureMap:
             pos = self._get_slot_pos(index)
             
             # Paste img into the correct position on the canvas based on bounds
-            canvas.paste(img, pos)
+            canvas.paste(img, *pos)
         
         return canvas
     
