@@ -10,6 +10,17 @@ from src.ai import Model, FeatureMap
 from src.ai.synthetic_data import DataGenerator, ClipCache
 from src.ai.synthetic_data.DataGenerator import slot_class_names
 
+FINE_TUNING = False
+
+if not FINE_TUNING:
+    TRAINING_EPOCHS = 10
+    SAMPLES_PER_CLASS = 100
+else:
+    TRAINING_EPOCHS = 2
+    SAMPLES_PER_CLASS = 100
+
+SLOTS_ASSETS_PATH = ASSETS_PATH / "synthetic_data" / "clips"
+
 def custom_collate(batch):
     imgs = [item[0] for item in batch]
     labels = torch.tensor([item[1] for item in batch])
@@ -43,20 +54,23 @@ def run():
     tips = ClipCache.from_directory(FeatureMap.SLOT_RESOLUTION, SLOTS_ASSETS_PATH)
     
     # We'll generate 100 variations of every class per epoch
-    dataset = SyntheticMenuDataset(samples_per_class=500, slots=tips)
+    dataset = SyntheticMenuDataset(samples_per_class=SAMPLES_PER_CLASS, slots=tips)
     dataloader = DataLoader(dataset, batch_size=32, shuffle=True, collate_fn=custom_collate)
 
     if MODEL_PATH.exists():
         print(f"Loading existing state from {MODEL_PATH}...")
-        model = Model.from_file(MODEL_PATH, training=True)
+        model = Model.from_file(MODEL_PATH, training=True, fine_tuning=FINE_TUNING)
     else:
-        model = Model(training=True)
+        model = Model(training=True, fine_tuning=FINE_TUNING)
 
     print(f"--- In-Memory Training Initialized ---")
     print(f"Device: {model.DEVICE}")
     print(f"Total Virtual Images: {len(dataset)}")
 
-    TRAINING_EPOCHS = 5
+    if model.FINE_TUNING:
+        print("Fine-tuning enabled: Unfreezing all layers.")
+    else:
+        print("Fine-tuning disabled: Freezing base layers.")
 
     for epoch in range(TRAINING_EPOCHS):
         running_loss = 0.0

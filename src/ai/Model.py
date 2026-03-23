@@ -16,14 +16,22 @@ CLASSES = [
             for i in range(FeatureMap.SLOT_CAPACITY)
           ]
 
+def _freeze_params(params) -> None:
+        for param in params:
+            param.requires_grad = False
+
+def _unfreeze_params(params) -> None:
+    for param in params:
+        param.requires_grad = True
+
 class Model:
-    def __init__(self, training=False, state=None):
+    def __init__(self, training=False, fine_tuning=False, state=None):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         model = models.resnet18(weights='IMAGENET1K_V1').to(device)        
 
         inputs_len = model.fc.in_features
         outputs_len = len(CLASSES)
-        model.fc = nn.Linear(inputs_len, outputs_len)
+        model.fc = nn.Linear(inputs_len, outputs_len).to(device)
         
         transform = transforms.Compose([
             transforms.ToTensor(),
@@ -41,15 +49,29 @@ class Model:
             model.train()
             self._criterion = nn.CrossEntropyLoss()
             self._optimizer = optim.Adam(model.parameters(), lr=0.0001)
+            
+            if fine_tuning:
+              _unfreeze_params(model.parameters())
+            else:
+              _freeze_params(model.parameters())
+            
+            _unfreeze_params(model.fc.parameters())
+        else:
+            model.eval()
 
         self._model = model
         self._device = device
         self._training = training
+        self._fine_tuning = fine_tuning
         self._to_tensor = to_tensor
-
+  
     @property
     def DEVICE(self):
         return self._device
+    
+    @property
+    def FINE_TUNING(self):
+        return self._fine_tuning
 
     @classproperty
     def CLASSES(cls):
@@ -73,10 +95,10 @@ class Model:
         torch.save(self._model.state_dict(), path)
     
     @classmethod
-    def from_file(cls, path: Path, training=False) -> "Model":
+    def from_file(cls, path: Path, training=False, fine_tuning=False) -> "Model":
         if not path.exists():
             raise FileNotFoundError(f"Model file not found at {path}")
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         state = torch.load(path, map_location=device)
-        return cls(training, state)
+        return cls(training, fine_tuning, state)
