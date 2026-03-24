@@ -5,7 +5,8 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import models
 from tqdm import tqdm
 
-from src.util.path import MODELS_PATH, MODEL_PATH, ASSETS_PATH
+from src.util import Img, ObjectPool
+from src.util.path import MODELS_PATH, MODEL_PATH, ASSETS_PATH, DATA_PATH
 from src.ai import Model, FeatureMap
 from src.ai.synthetic_data import DataGenerator, ClipCache
 from src.ai.synthetic_data.DataGenerator import slot_class_names
@@ -28,11 +29,12 @@ def custom_collate(batch):
 
 # --- 1. The In-Memory Dataset ---
 class SyntheticMenuDataset(Dataset):
-    def __init__(self, samples_per_class: int, slots: ClipCache):
+    def __init__(self, samples_per_class: int, slots: ClipCache, img_pool: ObjectPool=None):
         self.generator = DataGenerator(slots)
         # We get the list of class names from our generator helper
         self.classes = [name for _, name in slot_class_names(FeatureMap.SLOT_CAPACITY)]
         self.samples_per_class = samples_per_class
+        self._img = lambda: img_pool.acquire() if img_pool else None
 
     def __len__(self):
         return len(self.classes) * self.samples_per_class
@@ -43,18 +45,16 @@ class SyntheticMenuDataset(Dataset):
         class_name = self.classes[class_index]
 
         # Generate the Img object in RAM
-        # This uses your new high-speed NumPy/Img renderer
-        img = self.generator.generate_image(class_name)
+        img = self.generator.generate_image(class_name, self._img())
 
         return img, class_index
 
 def run():
-    # --- 2. Setup Data Engine ---
     SLOTS_ASSETS_PATH = ASSETS_PATH / "synthetic_data" / "clips"
     tips = ClipCache.from_directory(FeatureMap.SLOT_RESOLUTION, SLOTS_ASSETS_PATH)
     
-    # We'll generate 100 variations of every class per epoch
-    dataset = SyntheticMenuDataset(samples_per_class=SAMPLES_PER_CLASS, slots=tips)
+    img_pool = ObjectPool(lambda: Img.from_dimensions(*FeatureMap.CANVAS_RESOLUTION), max_size=100)
+    dataset = SyntheticMenuDataset(samples_per_class=SAMPLES_PER_CLASS, slots=tips, img_pool=img_pool)
     dataloader = DataLoader(dataset, batch_size=32, shuffle=True, collate_fn=custom_collate)
 
     if MODEL_PATH.exists():
@@ -65,7 +65,7 @@ def run():
 
     print(f"--- In-Memory Training Initialized ---")
     print(f"Device: {model.DEVICE}")
-    print(f"Total Virtual Images: {len(dataset)}")
+    print(f"Total Virtual Images: {len(dataset) * TRAINING_EPOCHS}")
 
     if model.FINE_TUNING:
         print("Fine-tuning enabled: Unfreezing all layers.")
@@ -80,6 +80,8 @@ def run():
             loss = model.train(imgs, labels)
             running_loss += loss
             pbar.set_postfix({'loss': f'{loss:.4f}'})
+            for img in imgs:
+                img_pool.release(img)
         
         # Save progress
         MODELS_PATH.mkdir(parents=True, exist_ok=True)

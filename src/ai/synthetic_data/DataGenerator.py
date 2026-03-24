@@ -15,7 +15,6 @@ class DataGenerator:
     def __init__(self, slots: ClipCache):
         self.slots = slots
         self.feature_map = FeatureMap()
-        self.canvas = Img.from_dimensions(*FeatureMap.CANVAS_RESOLUTION)
 
         self.generators = {}
         for selected_index, name in slot_class_names(FeatureMap.SLOT_CAPACITY):
@@ -32,15 +31,21 @@ class DataGenerator:
             else:
                 self.feature_map.slots.add_slot(self.slots.get_unselected())
     
-    def generate_image(self, class_name: str) -> Img:
-        """Generates a single feature map image for the given class name."""
+    def generate_image(self, class_name: str, canvas: Img=None) -> Img:
+        """
+        Generates a single feature map image for the given class name. 
+        If no canvas is provided, a new one will be created.
+        """
+        if canvas is None:
+            canvas = Img.from_dimensions(*FeatureMap.CANVAS_RESOLUTION)
+
         feature_map_generator = self.generators[class_name]
         if feature_map_generator is None:
             raise ValueError(f"Invalid class name: {class_name}")
         
         self.feature_map.clear()
         feature_map_generator()
-        return self.feature_map.render(self.canvas)
+        return self.feature_map.render(canvas)
 
     @classmethod
     def generate_to_disk(cls, samples_per_class, slots: ClipCache, output_path, progress=False):

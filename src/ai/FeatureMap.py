@@ -79,6 +79,10 @@ class FeatureMap:
         
 
     def render(self, canvas: Img=None) -> Img:
+        """
+        Renders the feature map onto a canvas. If no
+        canvas is provided, a new one will be created.
+        """
         if canvas is None:
             canvas = Img.from_dimensions(*self._canvas_size)
 
