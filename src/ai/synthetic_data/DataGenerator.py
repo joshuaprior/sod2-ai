@@ -24,8 +24,9 @@ class DataGenerator:
     def _populate_slots(self, selected_slot: int):
         min_active = selected_slot if selected_slot != -1 else 1
         max_active = self.feature_map.SLOT_CAPACITY - 1
+        active = random.randint(min_active, max_active)
 
-        for i in range(random.randint(min_active, max_active)):
+        for i in range(active + 1):
             if i == selected_slot:
                 self.feature_map.slots.add_slot(self.slots.get_selected())
             else:
