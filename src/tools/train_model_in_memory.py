@@ -11,8 +11,8 @@ from src.ai.synthetic_data.DataGenerator import slot_class_names
 FINE_TUNING = False
 
 if not FINE_TUNING:
-    TRAINING_EPOCHS = 10
-    SAMPLES_PER_CLASS = 100
+    TRAINING_EPOCHS = 20
+    SAMPLES_PER_CLASS = 1000
 else:
     TRAINING_EPOCHS = 2
     SAMPLES_PER_CLASS = 100
