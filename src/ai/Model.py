@@ -4,10 +4,17 @@ import torch.nn as nn
 import torch.optim as optim
 from torchvision import models, transforms
 from . import FeatureMap
-from src.util import classproperty, Img
+from src.util import classproperty, Img, DATA_PATH
 
 NORM_MEAN = [0.485, 0.456, 0.406]
 NORM_STD = [0.229, 0.224, 0.225]
+DEBUG = False
+
+if DEBUG:
+    img_count = 0
+    DEBUG_PATH = DATA_PATH / "debug" / "training_data"
+    DEBUG_PATH.mkdir(parents=True, exist_ok=True)
+    print(f"DEBUG MODE ENABLED: Saving training samples to {DEBUG_PATH}")
 
 CLASSES = [
             "unselected"
@@ -80,6 +87,15 @@ class Model:
     def train(self, imgs: list[Img], labels: torch.Tensor) -> float:
         if not self._training:
             raise RuntimeError("Model is not in training mode.")
+        
+        if DEBUG:
+            for i, img in enumerate(imgs):
+                class_name = CLASSES[labels[i].item()]
+                global img_count
+                img_count += 1
+                file = DEBUG_PATH / class_name / f"{class_name}_{img_count}.png"
+                file.parent.mkdir(parents=True, exist_ok=True)
+                img.save(file)
 
         inputs = self._to_tensor(imgs).to(self._device)
         labels = labels.to(self._device)
