@@ -1,12 +1,9 @@
 import torch
-import torch.nn as nn
-import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
-from torchvision import models
 from tqdm import tqdm
 
-from src.util import Img, ObjectPool
-from src.util.path import MODELS_PATH, MODEL_PATH, ASSETS_PATH, DATA_PATH
+from src.util import ObjectPool
+from src.util.path import MODELS_PATH, MODEL_PATH, ASSETS_PATH
 from src.ai import Model, FeatureMap
 from src.ai.synthetic_data import DataGenerator, ClipCache
 from src.ai.synthetic_data.DataGenerator import slot_class_names
@@ -53,7 +50,7 @@ def run():
     SLOTS_ASSETS_PATH = ASSETS_PATH / "synthetic_data" / "clips"
     tips = ClipCache.from_directory(FeatureMap.SLOT_RESOLUTION, SLOTS_ASSETS_PATH)
     
-    img_pool = ObjectPool(lambda: Img.from_dimensions(*FeatureMap.CANVAS_RESOLUTION), max_size=100)
+    img_pool = ObjectPool(lambda: DataGenerator.create_canvas(), max_size=100)
     dataset = SyntheticMenuDataset(samples_per_class=SAMPLES_PER_CLASS, slots=tips, img_pool=img_pool)
     dataloader = DataLoader(dataset, batch_size=32, shuffle=True, collate_fn=custom_collate)
 

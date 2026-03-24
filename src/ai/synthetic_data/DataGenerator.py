@@ -46,7 +46,7 @@ class DataGenerator:
         self.feature_map.clear()
         feature_map_generator()
         return self.feature_map.render(canvas)
-
+    
     @classmethod
     def generate_to_disk(cls, samples_per_class, slots: ClipCache, output_path, progress=False):
         generator = cls(slots)
@@ -63,4 +63,7 @@ class DataGenerator:
                 img = generator.generate_image(name)
                 img.save(class_dir / f"{name}_{i:04d}.bmp")
 
+    @classmethod
+    def create_canvas(cls) -> Img:
+        return FeatureMap.create_canvas()
     

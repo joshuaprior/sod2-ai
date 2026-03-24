@@ -50,7 +50,6 @@ class SlotList:
 class FeatureMap:
     def __init__(self):
         self._slots = SlotList(22, FeatureMap.SLOT_RESOLUTION)
-        self._background_color = (195, 195, 195)
         self._canvas_size = FeatureMap.CANVAS_RESOLUTION
 
     @classproperty
@@ -60,6 +59,10 @@ class FeatureMap:
     @classproperty
     def SLOT_RESOLUTION(cls) -> tuple[int, int]:
         return (15, 15)
+    
+    @classproperty
+    def BACKGROUND_COLOR(cls) -> tuple[int, int, int]:
+        return (195, 195, 195)
     
     @classproperty
     def SLOT_CAPACITY(cls) -> int:
@@ -76,8 +79,7 @@ class FeatureMap:
         x = 0 if index < 11 else 16
         y = 49 + (index % 11) * 16
         return (x, y)
-        
-
+    
     def render(self, canvas: Img=None) -> Img:
         """
         Renders the feature map onto a canvas. If no
@@ -89,7 +91,7 @@ class FeatureMap:
         if canvas.size != self._canvas_size:
             raise ValueError(f"Canvas size {canvas.size} does not match required {self._canvas_size}.")
         
-        canvas.fill(self._background_color)
+        canvas.fill(FeatureMap.BACKGROUND_COLOR)
 
         for index, img in self.slots.items():
             pos = self._get_slot_pos(index)
@@ -101,3 +103,9 @@ class FeatureMap:
     
     def clear(self):
         self._slots.clear()
+
+    @classmethod
+    def create_canvas(cls) -> Img:
+        canvas = Img.from_dimensions(*FeatureMap.CANVAS_RESOLUTION)
+        canvas.fill(FeatureMap.BACKGROUND_COLOR)
+        return canvas
