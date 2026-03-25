@@ -3,6 +3,9 @@ import numpy as np
 from pathlib import Path
 
 class Img:
+    HOT_PINK = (255, 0, 255)
+    BLACK = (0, 0, 0)
+
     def __init__(self, data: np.ndarray):
         if not isinstance(data, np.ndarray):
             raise TypeError("Img constructor requires a numpy ndarray.")
@@ -24,16 +27,43 @@ class Img:
     @property
     def height(self) -> int:
         return self._data.shape[0]
-    
+
+    def label(self, label: str, rect: tuple[int, int, int, int], color=HOT_PINK, text_color=BLACK):
+        """
+        Draws a 1px border around the specified rectangle (x, y, w, h).
+        The border is drawn 1px outside the bounds to avoid covering content.
+        Includes a text label with a solid background.
+        """
+        x, y, w, h = rect
+        
+        # Draw the Bounding Box (1px outside)
+        top_left = (x - 1, y - 1)
+        bottom_right = (x + w, y + h)
+        cv2.rectangle(self._data, top_left, bottom_right, color, 1)
+
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        font_scale = 0.4
+        thickness = 1
+        padding = 4
+        
+        # Calculate text size (width, height), baseline
+        (text_w, text_h), baseline = cv2.getTextSize(label, font, font_scale, thickness)
+
+        # Draw Text Background Rectangle, -1 thickness fills the rectangle
+        bg_top_left = (x - 1, y - 1 - text_h - baseline - padding * 2)
+        bg_bottom_right = (x - 1 + text_w + padding * 2, y - 1)
+        cv2.rectangle(self._data, bg_top_left, bg_bottom_right, color, -1)
+
+        # Draw the Text
+        text_origin = (x - 1 + padding, y - 1 - baseline - padding)
+        cv2.putText(self._data, label, text_origin, font, font_scale, text_color, thickness, cv2.LINE_AA)
+
     def paste(self, img: "Img", x: int, y: int):
         """
         Pastes another Img into this one at the given (x, y) coordinates.
         This is an opaque copy (no alpha blending).
         """
-        # 1. Determine the boundaries of the source image
         w, h = img.size
-
-        # 2. Use Slice Assignment to copy the pixels
         self._data[y : y + h, x : x + w] = img.raw_data
 
     def crop(self, x1: int, y1: int, x2: int, y2: int) -> "Img":
