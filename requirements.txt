@@ -1,9 +1,0 @@
-pyautogui
-opencv-python
-numpy
-torch
-torchvision
-keyboard
-pywin32
-tqdm
-Pillow

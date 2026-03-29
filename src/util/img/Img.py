@@ -12,6 +12,11 @@ class Img:
         
         self._data = data
 
+        from .scan_img import scan_img
+        from .resize import resize
+        self._scan_img =  scan_img
+        self._resize = resize
+
     @property
     def raw_data(self) -> np.ndarray:
         return self._data
@@ -75,6 +80,9 @@ class Img:
         """ Fills the entire image with the specified RGB color. """
         self._data[:] = color
 
+    def resize(self, target_res: tuple[int, int]) -> None:
+        self._resize(self, target_res)
+
     def save(self, path: Path):
         """
         Saves the image to disk. The format is determined by the 
@@ -83,6 +91,12 @@ class Img:
         # Convert internal RGB to BGR before saving
         data = cv2.cvtColor(self._data, cv2.COLOR_RGB2BGR)
         cv2.imwrite(str(path), data)
+
+    def scan(self, templates: list["Img"], mask: "Img", threshold: float|None = None) -> list[tuple[int, int]]:
+        if threshold is None:
+            return self._scan_img(self, templates, mask)
+        else:
+            return self._scan_img(self, templates, mask, threshold)
 
     @classmethod
     def from_file(cls, path: Path) -> "Img":

@@ -4,3 +4,4 @@ venv
 models
 assets
 __pycache__
+**/sod2_ai.egg-info/*

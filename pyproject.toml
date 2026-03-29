@@ -1,0 +1,38 @@
+[project]
+name = "sod2-ai"
+version = "0.1.0"
+description = "State of Decay 2 Menu Automation AI"
+dependencies = [
+    "pyautogui",
+    "opencv-python",
+    "numpy",
+    "torch",
+    "torchvision",
+    "keyboard",
+    "pywin32",
+    "tqdm",
+    "Pillow",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-describe",
+]
+
+[tool.pytest.ini_options]
+python_functions = ["it_*"]
+python_classes = ["Describe*"]
+testpaths = ["src"]
+addopts = "-v --showlocals"
+
+[project.scripts]
+scan_base = "src.tools.scan_base:run"

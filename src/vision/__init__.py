@@ -1,1 +1,0 @@
-from .scan_img import scan_img
