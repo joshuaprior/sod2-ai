@@ -8,7 +8,7 @@ def resize(img: np.ndarray, target_res: tuple[int, int]) -> np.ndarray:
 
     # Short-circuit if already at target resolution
     if (current_w, current_h) == (target_w, target_h):
-        return
+        return img.copy()
 
     # Perform the resize
     return cv2.resize(
