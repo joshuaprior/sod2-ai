@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 from typing import Generator
-from src.util import Img
 
 NEIGHBORHOOD_THRESHOLD = 10
 
@@ -20,14 +19,14 @@ def neighborhood(point: tuple[int, int], shape: tuple[int, int]) -> Generator[tu
       if 0 <= x < shape[1] and 0 <= y < shape[0]:
         yield (x, y)
 
-def scan_img(img: Img, templates: list[Img], mask: Img, threshold: float=0.95) -> list[tuple[int, int]]:
+def scan_img(img: np.ndarray, templates: list[np.ndarray], mask: np.ndarray, threshold: float=0.95) -> list[tuple[int, int]]:
     """
     Scans the given image for matches to the provided templates using the specified mask and threshold.
     
     Args:
-        img (Img): The source image to scan.
-        templates (list[Img]): A list of template images to match against.
-        mask (Img): A mask image to apply during matching.
+        img (np.ndarray): The source image to scan.
+        templates (list[np.ndarray]): A list of template images to match against.
+        mask (np.ndarray): A mask image to apply during matching.
         threshold (float): The minimum correlation value to consider a match valid.
     
     Returns:
@@ -37,7 +36,7 @@ def scan_img(img: Img, templates: list[Img], mask: Img, threshold: float=0.95) -
     visited_points = set()
 
     for template in templates:
-        similarity_map = cv2.matchTemplate(img.raw_data, template.raw_data, cv2.TM_CCORR_NORMED, mask=mask.raw_data)
+        similarity_map = cv2.matchTemplate(img, template, cv2.TM_CCORR_NORMED, mask=mask)
         points_y, points_x = np.where(similarity_map >= threshold)
         
         # Sort points by similarity score in descending

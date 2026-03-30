@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from pathlib import Path
+from .operations.scan_img import scan_img
 
 class Img:
     HOT_PINK = (255, 0, 255)
@@ -12,7 +13,6 @@ class Img:
         
         self._data = data
 
-        from .scan_img import scan_img
         from .resize import resize
         self._scan_img =  scan_img
         self._resize = resize
@@ -93,10 +93,13 @@ class Img:
         cv2.imwrite(str(path), data)
 
     def scan(self, templates: list["Img"], mask: "Img", threshold: float|None = None) -> list[tuple[int, int]]:
+        templates = [template.raw_data for template in templates]
+        mask = mask.raw_data
+
         if threshold is None:
-            return self._scan_img(self, templates, mask)
+            return scan_img(self.raw_data, templates, mask)
         else:
-            return self._scan_img(self, templates, mask, threshold)
+            return scan_img(self.raw_data, templates, mask, threshold)
 
     @classmethod
     def from_file(cls, path: Path) -> "Img":
