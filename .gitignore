@@ -1,4 +1,5 @@
 .workspace
+.vscode
 data
 venv
 models

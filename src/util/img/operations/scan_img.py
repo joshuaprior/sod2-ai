@@ -4,21 +4,6 @@ from typing import Generator
 
 NEIGHBORHOOD_THRESHOLD = 10
 
-def neighborhood(point: tuple[int, int], shape: tuple[int, int]) -> Generator[tuple[int, int], None, None]:
-  """
-  Generates points in the neighborhood of the given point within the specified proximity threshold.
-  Ensures that generated points are within the bounds of the image shape.
-  """
-  min_x = point[0] - NEIGHBORHOOD_THRESHOLD
-  max_x = point[0] + NEIGHBORHOOD_THRESHOLD
-  min_y = point[1] - NEIGHBORHOOD_THRESHOLD
-  max_y = point[1] + NEIGHBORHOOD_THRESHOLD
-
-  for x in range(min_x, max_x + 1):
-    for y in range(min_y, max_y + 1):
-      if 0 <= x < shape[1] and 0 <= y < shape[0]:
-        yield (x, y)
-
 def scan_img(img: np.ndarray, templates: list[np.ndarray], mask: np.ndarray, threshold: float=0.95) -> list[tuple[int, int]]:
     """
     Scans the given image for matches to the provided templates using the specified mask and threshold.
@@ -36,7 +21,13 @@ def scan_img(img: np.ndarray, templates: list[np.ndarray], mask: np.ndarray, thr
     visited_points = set()
 
     for template in templates:
+        if template.shape[0] > img.shape[0] or template.shape[1] > img.shape[1]:
+            # template is larger than the image, no matches possible
+            continue
+
         similarity_map = cv2.matchTemplate(img, template, cv2.TM_CCORR_NORMED, mask=mask)
+        # Replace any NaN or infinite values in the similarity map with 0.0 to avoid issues during thresholding
+        similarity_map[~np.isfinite(similarity_map)] = 0.0
         points_y, points_x = np.where(similarity_map >= threshold)
         
         # Sort points by similarity score in descending
@@ -65,3 +56,18 @@ def scan_img(img: np.ndarray, templates: list[np.ndarray], mask: np.ndarray, thr
             locations.append(max_similarity_point)
 
     return locations
+
+def neighborhood(point: tuple[int, int], shape: tuple[int, int]) -> Generator[tuple[int, int], None, None]:
+  """
+  Generates points in the neighborhood of the given point within the specified proximity threshold.
+  Ensures that generated points are within the bounds of the image shape.
+  """
+  min_x = point[0] - NEIGHBORHOOD_THRESHOLD
+  max_x = point[0] + NEIGHBORHOOD_THRESHOLD
+  min_y = point[1] - NEIGHBORHOOD_THRESHOLD
+  max_y = point[1] + NEIGHBORHOOD_THRESHOLD
+
+  for x in range(min_x, max_x + 1):
+    for y in range(min_y, max_y + 1):
+      if 0 <= x < shape[1] and 0 <= y < shape[0]:
+        yield (x, y)
