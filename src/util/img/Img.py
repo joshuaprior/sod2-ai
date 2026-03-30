@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from pathlib import Path
 from .operations.scan_img import scan_img
+from .operations.resize import resize
 
 class Img:
     HOT_PINK = (255, 0, 255)
@@ -12,10 +13,6 @@ class Img:
             raise TypeError("Img constructor requires a numpy ndarray.")
         
         self._data = data
-
-        from .resize import resize
-        self._scan_img =  scan_img
-        self._resize = resize
 
     @property
     def raw_data(self) -> np.ndarray:
@@ -81,7 +78,8 @@ class Img:
         self._data[:] = color
 
     def resize(self, target_res: tuple[int, int]) -> None:
-        self._resize(self, target_res)
+        """ Resizes the image to the target resolution. """
+        self._data = resize(self._data, target_res)
 
     def save(self, path: Path):
         """
